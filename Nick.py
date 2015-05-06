@@ -8,13 +8,7 @@ from sklearn.svm import SVR
 from sklearn.gaussian_process import GaussianProcess
 from sklearn.ensemble import ExtraTreesClassifier
 
-model_names = {
-	'GP' : GaussianProcess(),
-	'SVR' : SVR(epsilon = 5),
-	'ET' : ExtraTreesClassifier(n_estimators=100)
-}
-
-def train_model(model_name, X = None, y = None, num_data_points=-1):
+def train_model(model, X = None, y = None, num_data_points=-1):
 
 	if X is None:
 		print "Importing Data..."
@@ -25,9 +19,6 @@ def train_model(model_name, X = None, y = None, num_data_points=-1):
 		X = X[:num_data_points,]
 		y = y[:num_data_points,]
 
-
-	model = model_names[model_name]
-
 	print "Training Model"
 	start = timeit.default_timer()
 	model.fit(X, y)
@@ -37,13 +28,19 @@ def train_model(model_name, X = None, y = None, num_data_points=-1):
 	return model
 
 def train_GP(X = None, y = None, num_data_points=-1):
-	return train_model('GP', X, y, num_data_points)
+	return train_model(
+		GaussianProcess(), 
+		X, y, num_data_points)
 
 def train_SVR(X = None, y = None, resolution = 1, num_data_points=-1):
-	return train_model('SVR', X, y, num_data_points)
+	return train_model(
+		SVR(epsilon=5), 
+		X, y, num_data_points)
 
-def train_ET(X = None, y = None, num_data_points=-1):
-	return train_model('ET', X, y, num_data_points)
+def train_ET(X = None, y = None, num_data_points=-1, n_estimators=10):
+	return train_model(
+		ExtraTreesClassifier(n_estimators=n_estimators), 
+		X, y, num_data_points)
 
 def predict_model(model, X = None, y = None, num_data_points=-1):
 
