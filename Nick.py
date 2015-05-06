@@ -7,7 +7,6 @@ from main import import_file
 from sklearn.svm import SVR
 from sklearn.gaussian_process import GaussianProcess
 from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 
 model_names = {
 	'GP' : GaussianProcess(),
@@ -64,26 +63,3 @@ def predict_model(model, X = None, y = None, num_data_points=-1):
 	print "Prediction completed in %f seconds" % (end-start)
 
 	return preds, y
-
-def score_preds(preds, y):
-
-	print "Accuracy: "
-	print accuracy_score(y, preds)
-	print
-
-	print "MSE: "
-	print mean_squared_error(y, preds)
-	print
-
-	print "r^2: "
-	print r2_score(y, preds)
-
-def save_preds(preds, outname):
-
-	f = open(outname, 'w+')
-
-	for elem in preds:
-		f.write(str(elem))
-		f.write('\n')
-
-	f.close()
