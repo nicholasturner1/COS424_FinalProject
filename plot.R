@@ -1,5 +1,7 @@
 library(ggplot2)
 
+setwd('GitHub/COS424_FinalProject/')
+
 #MSD (Year Prediction Subset)
 d <- read.csv('YearPredictionMSD.txt', header=FALSE)
 
@@ -13,6 +15,10 @@ colnames(d) <- c('year',mu_names,sigma_names)
 d$yr5 <- d$year %/% 5 * 5
 d$yr10 <- d$year %/% 10 * 10
 
+#Forming dataset with no songs before 1960 (under-represented)
+d_post60 <- d[d$year >= 1960,]
+
+###############################
 #Splitting data into training, cv, and test sets
 set.seed(987654321)
 
@@ -38,6 +44,31 @@ test <- cv_test[-cv_index,]
 write.csv(train, 'train.csv',row.names=FALSE)
 write.csv(cv, 'cv.csv',row.names=FALSE)
 write.csv(test, 'test.csv',row.names=FALSE)
+###############################
+#Same for post-60 dataset
+
+training_percentage <- 0.8
+cv_percentage <- 0.1
+#implicitly, test_percentage = 0.1
+
+n <- nrow(d_post60)
+n_training <- floor(training_percentage * n)
+n_cv <- floor(cv_percentage * n)
+n_test <- n - n_training - n_cv
+
+train_index <- sample(seq_len(n), n_training)
+train <- d_post60[train_index,]
+
+cv_test <- d_post60[-train_index,]
+cv_index <- sample(seq_len(nrow(cv_test)), n_cv)
+cv <- cv_test[cv_index,]
+
+test <- cv_test[-cv_index,]
+
+#Writing sets to disk
+write.csv(train, 'train_post60.csv',row.names=FALSE)
+write.csv(cv, 'cv_post60.csv',row.names=FALSE)
+write.csv(test, 'test_post60.csv',row.names=FALSE)
 ###############################
 #Dem plots
 
@@ -125,3 +156,21 @@ ggplot(to_plot2, aes(x=v2, y=v3, colour=yr10)) +
   labs(x='2nd Right Singular Vector Weight',
        y='3rd Right Singular Vector Weight',
        title='COV V2 x V3, colored by year')
+
+########
+#Error plots
+
+preds <- read.csv('et100_preds.csv', header=FALSE)
+cv <- read.csv('cv.csv')
+
+err <- (cv$year - preds)^2
+test <- data.frame(
+  'year' = cv$year,
+  'error' = err)
+
+ggplot(test, aes(x=year, y=V1)) +
+  geom_smooth() +
+  labs(
+    x = "Year",
+    y = 'Squared Error',
+    title= 'Squared Error by Year: "Yes, Our Data is Skewed We Get It"')
