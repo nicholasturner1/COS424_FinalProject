@@ -12,7 +12,7 @@ def train_model(model, X = None, y = None, num_data_points=-1):
 
 	if X is None:
 		print "Importing Data..."
-		X, y = import_file('train.csv')
+		X, y = import_file('train_post60.csv')
 
 	if num_data_points > 0:
 		print "Selecting data points.."
