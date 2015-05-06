@@ -1,5 +1,7 @@
 import numpy as np
 
+from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
+
 def import_file(filename, y_var = "yr"):
 
 	year_index = {
@@ -25,3 +27,25 @@ def import_file(filename, y_var = "yr"):
 
 	return X, y
 
+def score_preds(preds, y):
+
+	print "Accuracy: "
+	print accuracy_score(y, preds)
+	print
+
+	print "MSE: "
+	print mean_squared_error(y, preds)
+	print
+
+	print "r^2: "
+	print r2_score(y, preds)
+
+def save_preds(preds, outname):
+
+	f = open(outname, 'w+')
+
+	for elem in preds:
+		f.write(str(elem))
+		f.write('\n')
+
+	f.close()
