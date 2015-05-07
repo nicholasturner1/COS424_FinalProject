@@ -7,6 +7,7 @@ from main import import_file
 from sklearn.svm import SVR
 from sklearn.gaussian_process import GaussianProcess
 from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 def train_model(model, X = None, y = None, num_data_points=-1):
 
@@ -40,6 +41,11 @@ def train_SVR(X = None, y = None, resolution = 1, num_data_points=-1):
 def train_ET(X = None, y = None, num_data_points=-1, n_estimators=10):
 	return train_model(
 		ExtraTreesClassifier(n_estimators=n_estimators), 
+		X, y, num_data_points)
+
+def train_KNN(X = None, y = None, num_data_points=-1, n_neighbors=1):
+	return train_model(
+		KNeighborsClassifier(n_neighbors=n_neighbors),
 		X, y, num_data_points)
 
 def predict_model(model, X = None, y = None, num_data_points=-1):
