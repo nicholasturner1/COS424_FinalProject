@@ -1,6 +1,8 @@
 library(ggplot2)
+library(reshape)
 
-setwd('GitHub/COS424_FinalProject/')
+setwd('Development_Workspaces/COS424_FinalProject/')
+#setwd('GitHub/COS424_FinalProject/')
 
 #MSD (Year Prediction Subset)
 d <- read.csv('YearPredictionMSD.txt', header=FALSE)
@@ -17,7 +19,6 @@ d$yr10 <- d$year %/% 10 * 10
 
 #Forming dataset with no songs before 1960 (under-represented)
 d_post60 <- d[d$year >= 1960,]
-
 ###############################
 #Splitting data into training, cv, and test sets
 set.seed(987654321)
@@ -174,3 +175,51 @@ ggplot(test, aes(x=year, y=V1)) +
     x = "Year",
     y = 'Squared Error',
     title= 'Squared Error by Year: "Yes, Our Data is Skewed We Get It"')
+
+##################
+#ExtraTrees Comparison
+cv <- read.csv('cv_post60.csv')
+p_et10 <- read.csv('preds/ET_10_year_cv_preds.csv', header=FALSE)
+p_et20 <- read.csv('preds/ET_20_year_cv_preds.csv', header=FALSE)
+p_et30 <- read.csv('preds/ET_30_year_cv_preds.csv', header=FALSE)
+p_et40 <- read.csv('preds/ET_40_year_cv_preds.csv', header=FALSE)
+p_et50 <- read.csv('preds/ET_50_year_cv_preds.csv', header=FALSE)
+
+err10 <- as.vector((cv$year - p_et10$V1)^2)
+err20 <- as.vector((cv$year - p_et20$V1)^2)
+err30 <- as.vector((cv$year - p_et30$V1)^2)
+err40 <- as.vector((cv$year - p_et40$V1)^2)
+err50 <- as.vector((cv$year - p_et50$V1)^2)
+
+qplot(cv$year, err, geom='smooth') + geom_point(alpha=0.01)
+
+to_plot = data.frame(
+  'ET10' = err10,
+  'ET20' = err20,
+  'ET30' = err30,
+  'ET40' = err40,
+  'ET50' = err50,  
+  'year' = cv$year
+  )
+m_to_plot <- melt(to_plot, id.vars='year')
+colnames(m_to_plot) <- c('Year','Model','Squared_Error')
+
+ggplot(m_to_plot, aes(x=Year, y=Squared_Error, colour=Model, fill=Model)) +
+  geom_smooth() +
+  labs(
+    y = "Squared Error",
+    title = "Smoothed Squared Error by Year")
+
+to_plot_p = data.frame(
+  'ET10' = p_et10$V1,
+  'ET20' = p_et20$V1,
+  'ET30' = p_et30$V1,
+  'ET40' = p_et40$V1,
+  'ET50' = p_et50$V1,
+  'year' = cv$year
+  )
+m_to_plot_p <- melt(to_plot_p, id.vars='year')
+colnames(m_to_plot_p) <- c('Year','Model','Predicted')
+
+ggplot(m_to_plot_p, aes(x=Year, y=Predicted, colour=Model, fill=Model)) +
+  geom_smooth()
