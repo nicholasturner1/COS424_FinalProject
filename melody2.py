@@ -18,7 +18,7 @@ class Melody:
 		self.models = {
 			'Linear Regression' : linear_model.LinearRegression(),
 			'Ridge Regression' : linear_model.Ridge(alpha = 1),
-			'Bayesian Ridge' : linear_model.BayesianRidge(),
+			#'Bayesian Ridge' : linear_model.BayesianRidge(),
 			#'OMP CV' : linear_model.OrthogonalMatchingPursuit(),
 			'Lasso' : linear_model.Lasso(alpha = 100),
 			'LARS' : linear_model.Lars(n_nonzero_coefs=91)
@@ -53,20 +53,20 @@ class Melody:
 
 		self.preds = np.array(self.preds).transpose()
 
-		std_values = np.std(self.preds, axis=1)
+		self.std_values = np.std(self.preds, axis=1)
 
-		self.percentiles = find_percentiles(std_values, self.n_splits)
+		self.percentiles = find_percentiles(self.std_values, self.n_splits)
 
 		for i in range(self.n_splits):
 
 			if i == 0:
-				data_indices = std_values <= self.percentiles[i]
+				data_indices = self.std_values <= self.percentiles[i]
 			elif i == (self.n_splits-1):
-				data_indices = std_values > self.percentiles[i-1]
+				data_indices = self.std_values > self.percentiles[i-1]
 			else:
 				data_indices = np.logical_and(
-					std_values > self.percentiles[i-1],
-					std_values <= self.percentiles[i]
+					self.std_values > self.percentiles[i-1],
+					self.std_values <= self.percentiles[i]
 					)
 
 			X2 = self.preds[data_indices,:]
