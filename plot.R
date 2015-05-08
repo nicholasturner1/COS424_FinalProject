@@ -223,3 +223,44 @@ colnames(m_to_plot_p) <- c('Year','Model','Predicted')
 
 ggplot(m_to_plot_p, aes(x=Year, y=Predicted, colour=Model, fill=Model)) +
   geom_smooth()
+
+#New SVD (PCA)
+d[2:91] <- scale(d[2:91]) #Mean Centering and Scaling Variance to 1
+full_svd <- svd(t(d[2:91]))
+qplot(1:length(full_svd$d),full_svd$d, geom='point')
+#top5 are pretty good, top3 are still better, and top1 better still
+
+#collecting first 3 right singular vectors and the year bins into a data frame
+to_plot <- data.frame(
+  'v1' = full_svd$v[,1],
+  'v2' = full_svd$v[,2],
+  'v3' = full_svd$v[,3],
+  'year' = d$year,
+  'yr5' = d$yr5,
+  'yr10' = d$yr10)
+
+to_plot$yr10 <- as.factor(to_plot$yr10)
+to_plot$yr5 <- as.factor(to_plot$yr5)
+#First two comps by decade
+ggplot(to_plot, aes(x=v1, y=v2, colour=yr10)) +
+  scale_color_brewer(palette='Spectral') +
+  geom_point() +
+  labs(x='1st Right Singular Vector Weight',
+       y='2nd Right Singular Vector Weight',
+       title='V1 x V2, colored by year')
+
+#Same for V1 and V3
+ggplot(to_plot, aes(x=v1, y=v3, colour=yr10)) +
+  scale_color_brewer(palette='Spectral') +
+  geom_point() +
+  labs(x='1st Right Singular Vector Weight',
+       y='3rd Right Singular Vector Weight',
+       title='V1 x V3, colored by year')
+
+#Same for V2 and V3
+ggplot(to_plot, aes(x=v2, y=v3, colour=yr10)) +
+  scale_color_brewer(palette='Spectral') +
+  geom_point() +
+  labs(x='2nd Right Singular Vector Weight',
+       y='3rd Right Singular Vector Weight',
+       title='V2 x V3, colored by year')
