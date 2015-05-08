@@ -12,6 +12,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.manifold import Isomap
 from sklearn.lda import LDA
 
+import melody2 as m
+
 def train_model(model, X = None, y = None, num_data_points=-1):
 
 	if X is None:
@@ -49,6 +51,11 @@ def train_ET(X = None, y = None, num_data_points=-1, n_estimators=10):
 def train_KNN(X = None, y = None, num_data_points=-1, n_neighbors=1):
 	return train_model(
 		KNeighborsClassifier(n_neighbors=n_neighbors),
+		X, y, num_data_points)
+
+def train_Melody(X = None, y = None, num_data_points=-1, n_splits=4):
+	return train_model(
+		m.Melody(n_splits),
 		X, y, num_data_points)
 
 def predict_model(model, X = None, y = None, num_data_points=-1):
