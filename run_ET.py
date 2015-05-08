@@ -8,12 +8,12 @@ testx, testy = n.import_file('test.csv')
 
 for n_estimators in (10, 20, 30, 40, 50):
 
-	ET = n.train_ET(X, y, n_estimators)
+	ET = n.train_ET(X, y, n_estimators=n_estimators)
 
-	preds_cv = n.predict_model(ET, cvx, cvy)
-	preds_test = n.predict_model(ET, testx, testy)
+	preds_cv, _ = n.predict_model(ET, cvx, cvy)
+	preds_test, _ = n.predict_model(ET, testx, testy)
 
-	m.score_preds(preds_cv)
+	m.score_preds(preds_cv, cvy)
 
-	m.save_preds(preds_cv, 'ET_%d_year_cv_preds.csv' % n_estimators)
-	m.save_preds(preds_test, 'ET_%d_year_test_preds.csv' % n_estimators)
+	m.save_preds(preds_cv, 'ET_%d_year_cv_preds_full.csv' % n_estimators)
+	m.save_preds(preds_test, 'ET_%d_year_test_preds_full.csv' % n_estimators)
