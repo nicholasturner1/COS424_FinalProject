@@ -27,11 +27,12 @@ def import_file(filename, y_var = "yr"):
 
 	return X, y
 
-def score_preds(preds, y):
+def score_preds(preds, y, accuracy=False):
 
-	print "Accuracy: "
-	print accuracy_score(y, preds)
-	print
+	if accuracy:
+		print "Accuracy: "
+		print accuracy_score(y, preds)
+		print
 
 	print "MSE: "
 	print mean_squared_error(y, preds)
