@@ -19,7 +19,7 @@ class Melody:
 			'Linear Regression' : linear_model.LinearRegression(),
 			'Ridge Regression' : linear_model.Ridge(alpha = 1),
 			'Bayesian Ridge' : linear_model.BayesianRidge(),
-			'OMP CV' : linear_model.OrthogonalMatchingPursuitCV(),
+			#'OMP CV' : linear_model.OrthogonalMatchingPursuit(),
 			'Lasso' : linear_model.Lasso(alpha = 100),
 			'LARS' : linear_model.Lars(n_nonzero_coefs=91)
 			}
