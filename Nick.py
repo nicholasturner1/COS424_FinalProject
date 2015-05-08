@@ -9,6 +9,9 @@ from sklearn.gaussian_process import GaussianProcess
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
+from sklearn.manifold import Isomap
+from sklearn.lda import LDA
+
 def train_model(model, X = None, y = None, num_data_points=-1):
 
 	if X is None:
@@ -66,3 +69,49 @@ def predict_model(model, X = None, y = None, num_data_points=-1):
 	print "Prediction completed in %f seconds" % (end-start)
 
 	return preds, y
+
+#SURPRISE SURPRISE THIS TAKES TOO LONG
+def isomap_data(X, n_components=2, n_neighbors=5, max_iter=None, num_data_points=-1):
+
+	mapping = Isomap(n_neighbors=n_neighbors, n_components=n_components, 
+		max_iter=max_iter)
+
+	if num_data_points > 0:
+		X = X[:num_data_points,:]
+
+	print "Performing mapping"
+	start = timeit.default_timer()
+	mapped = mapping.fit_transform(X)	
+	end = timeit.default_timer()
+	print "Mapping completed in %f seconds" % (end-start)
+
+	return mapped, mapping
+
+def lda_data(X, y, n_components=2, num_data_points=-1):
+
+	lda = LDA(n_components=n_components)
+
+	if num_data_points > 0:
+		X = X[:num_data_points,:]
+		y = y[:num_data_points]
+
+	print "Performing mapping"
+	start = timeit.default_timer()
+	mapped = lda.fit_transform(X, y)	
+	end = timeit.default_timer()
+	print "Mapping completed in %f seconds" % (end-start)
+
+	return mapped, lda
+
+
+
+def save_data(X, outname):
+
+	f = open(outname, 'w+')
+
+	for row in X:
+		next_line = ','.join(map(str,row))
+		f.write(next_line)
+		f.write('\n')
+
+	f.close()
