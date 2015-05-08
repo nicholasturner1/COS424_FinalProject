@@ -10,10 +10,10 @@ for n_splits in (2, 4, 6, 8, 10):
 
 	model = n.train_Melody(X, y, n_splits=n_splits)
 
-	preds_cv = n.predict_model(model, cvx, cvy)
-	preds_test = n.predict_model(model, testx, testy)
+	preds_cv, _ = n.predict_model(model, cvx, cvy)
+	preds_test, _ = n.predict_model(model, testx, testy)
 
 	m.score_preds(preds_cv, cvy)
 
-	m.save_preds(preds_cv, 'Melody_%d_year_cv_preds.csv' % n_estimators)
-	m.save_preds(preds_test, 'Melody_%d_year_test_preds.csv' % n_estimators)
+	m.save_preds(preds_cv, 'Melody_%d_year_cv_preds.csv' % n_splits)
+	m.save_preds(preds_test, 'Melody_%d_year_test_preds.csv' % n_splits)
