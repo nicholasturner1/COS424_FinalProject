@@ -223,3 +223,5 @@ colnames(m_to_plot_p) <- c('Year','Model','Predicted')
 
 ggplot(m_to_plot_p, aes(x=Year, y=Predicted, colour=Model, fill=Model)) +
   geom_smooth()
+
+colMeans()
