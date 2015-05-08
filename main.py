@@ -23,7 +23,7 @@ def import_file(filename, y_var = "yr"):
 	y = np.array(
 		[ line[year_index[y_var]] 
 		  for line in all_data],
-		dtype=int)
+		dtype=float)
 
 	return X, y
 
