@@ -1,7 +1,7 @@
 library(ggplot2)
 library(reshape)
 
-setwd('Development_Workspaces/COS424_FinalProject/')
+setwd('~/Development_Workspaces/COS424_FinalProject/')
 #setwd('GitHub/COS424_FinalProject/')
 
 #MSD (Year Prediction Subset)
@@ -17,6 +17,13 @@ colnames(d) <- c('year',mu_names,sigma_names)
 d$yr5 <- d$year %/% 5 * 5
 d$yr10 <- d$year %/% 10 * 10
 
+###############################
+#Year Histograms
+qplot(d$year, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram')
+qplot(d$yr5, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by LUSTRUM)')
+qplot(d$yr10, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by decade)')
+
+###############################
 #Forming dataset with no songs before 1960 (under-represented)
 d_post60 <- d[d$year >= 1960,]
 ###############################
@@ -72,11 +79,6 @@ write.csv(cv, 'cv_post60.csv',row.names=FALSE)
 write.csv(test, 'test_post60.csv',row.names=FALSE)
 ###############################
 #Dem plots
-
-#highly skewed (ofc)
-qplot(d$year, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram')
-qplot(d$yr5, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by LUSTRUM)')
-qplot(d$yr10, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by decade)')
 
 #performing SVD
 mean_svd <- svd(t(d[2:13]))
@@ -178,12 +180,12 @@ ggplot(test, aes(x=year, y=V1)) +
 
 ##################
 #ExtraTrees Comparison
-cv <- read.csv('cv_post60.csv')
-p_et10 <- read.csv('preds/ET_10_year_cv_preds.csv', header=FALSE)
-p_et20 <- read.csv('preds/ET_20_year_cv_preds.csv', header=FALSE)
-p_et30 <- read.csv('preds/ET_30_year_cv_preds.csv', header=FALSE)
-p_et40 <- read.csv('preds/ET_40_year_cv_preds.csv', header=FALSE)
-p_et50 <- read.csv('preds/ET_50_year_cv_preds.csv', header=FALSE)
+cv <- read.csv('cv.csv')
+p_et10 <- read.csv('preds/ET/ET_10_year_cv_preds_full.csv', header=FALSE)
+p_et20 <- read.csv('preds/ET/ET_20_year_cv_preds_full.csv', header=FALSE)
+p_et30 <- read.csv('preds/ET/ET_30_year_cv_preds_full.csv', header=FALSE)
+p_et40 <- read.csv('preds/ET/ET_40_year_cv_preds_full.csv', header=FALSE)
+p_et50 <- read.csv('preds/ET/ET_50_year_cv_preds_full.csv', header=FALSE)
 
 err10 <- as.vector((cv$year - p_et10$V1)^2)
 err20 <- as.vector((cv$year - p_et20$V1)^2)
@@ -201,14 +203,16 @@ to_plot = data.frame(
   'ET50' = err50,  
   'year' = cv$year
   )
+
 m_to_plot <- melt(to_plot, id.vars='year')
 colnames(m_to_plot) <- c('Year','Model','Squared_Error')
 
 ggplot(m_to_plot, aes(x=Year, y=Squared_Error, colour=Model, fill=Model)) +
   geom_smooth() +
+  geom_point(alpha=0.05) +
   labs(
     y = "Squared Error",
-    title = "Smoothed Squared Error by Year")
+    title = "Squared Error by Year for ExtraTrees Models")
 
 to_plot_p = data.frame(
   'ET10' = p_et10$V1,
@@ -218,12 +222,19 @@ to_plot_p = data.frame(
   'ET50' = p_et50$V1,
   'year' = cv$year
   )
+
 m_to_plot_p <- melt(to_plot_p, id.vars='year')
 colnames(m_to_plot_p) <- c('Year','Model','Predicted')
 
 ggplot(m_to_plot_p, aes(x=Year, y=Predicted, colour=Model, fill=Model)) +
-  geom_smooth()
+  geom_smooth() +
+  geom_abline(intercept=0, slope=1, colour='grey50') +
+  labs(
+    x = 'Year',
+    y = 'Predicted Release Year',
+    title = 'ExtraTrees Model Predictions by Year')
 
+###############################
 #New SVD (PCA)
 d[2:91] <- scale(d[2:91]) #Mean Centering and Scaling Variance to 1
 full_svd <- svd(t(d[2:91]))
@@ -235,32 +246,52 @@ to_plot <- data.frame(
   'v1' = full_svd$v[,1],
   'v2' = full_svd$v[,2],
   'v3' = full_svd$v[,3],
-  'year' = d$year,
-  'yr5' = d$yr5,
-  'yr10' = d$yr10)
+  'Year' = d$year,
+  'Lustrum' = d$yr5,
+  'Decade' = d$yr10)
 
-to_plot$yr10 <- as.factor(to_plot$yr10)
-to_plot$yr5 <- as.factor(to_plot$yr5)
+to_plot$Decade <- as.factor(to_plot$Decade)
+to_plot$Lustrum <- as.factor(to_plot$Lustrum)
 #First two comps by decade
-ggplot(to_plot, aes(x=v1, y=v2, colour=yr10)) +
+ggplot(to_plot, aes(x=v1, y=v2, colour=Decade)) +
   scale_color_brewer(palette='Spectral') +
   geom_point() +
   labs(x='1st Right Singular Vector Weight',
        y='2nd Right Singular Vector Weight',
-       title='V1 x V2, colored by year')
+       title='V1 x V2, Colored by Decade')
 
 #Same for V1 and V3
-ggplot(to_plot, aes(x=v1, y=v3, colour=yr10)) +
+ggplot(to_plot, aes(x=v1, y=v3, colour=Decade)) +
   scale_color_brewer(palette='Spectral') +
   geom_point() +
   labs(x='1st Right Singular Vector Weight',
        y='3rd Right Singular Vector Weight',
-       title='V1 x V3, colored by year')
+       title='V1 x V3, Colored by Decade')
 
 #Same for V2 and V3
-ggplot(to_plot, aes(x=v2, y=v3, colour=yr10)) +
+ggplot(to_plot, aes(x=v2, y=v3, colour=Decade)) +
   scale_color_brewer(palette='Spectral') +
   geom_point() +
   labs(x='2nd Right Singular Vector Weight',
        y='3rd Right Singular Vector Weight',
-       title='V2 x V3, colored by year')
+       title='V2 x V3, Colored by Decade')
+
+###############################
+#LDA Plots
+
+std_values <- read.csv('trying_again.csv', header=FALSE)
+colnames(std_values) <- c('std_value','year')
+std_values$quartile <- (
+  (std_values$std_value > quantile(std_values$std_value, 0.2)) +
+  (std_values$std_value > quantile(std_values$std_value, 0.4)) +
+  (std_values$std_value > quantile(std_values$std_value, 0.6)) +
+  (std_values$std_value > quantile(std_values$std_value, 0.8))
+  )
+std_values$quartile <- as.factor(std_values$quartile)
+
+qplot(std_values$year, 
+      std_values$std_value, 
+      colour=std_values$quartile, 
+      geom="point") +
+  scale_color_brewer(palette='Spectral')
+  
