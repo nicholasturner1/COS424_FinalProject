@@ -19,9 +19,9 @@ d$yr10 <- d$year %/% 10 * 10
 
 ###############################
 #Year Histograms
-qplot(d$year, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram')
-qplot(d$yr5, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by LUSTRUM)')
-qplot(d$yr10, geom='histogram', xlab='Year', ylab='Count', main='Year Histogram (by decade)')
+qplot(d$year, geom='histogram', xlab='Year', ylab='Count', main='Year Distribution')
+qplot(d$yr5, geom='histogram', xlab='Year', ylab='Count', main='Year Distribution (by Lustrum)')
+qplot(d$yr10, geom='histogram', xlab='Year', ylab='Count', main='Year Distribution (by Decade)')
 
 ###############################
 #Forming dataset with no songs before 1960 (under-represented)
@@ -278,8 +278,48 @@ ggplot(to_plot, aes(x=v2, y=v3, colour=Decade)) +
 
 ###############################
 #LDA Plots
+lda_yr <- read.csv('lda_data/train_lda_yr_2comps.csv')
+lda_yr5 <- read.csv('lda_data/train_lda_yr5_2comps.csv')
+lda_yr10 <- read.csv('lda_data/train_lda_yr10_2comps.csv')
 
-std_values <- read.csv('trying_again.csv', header=FALSE)
+lda_colnames <- c('Year','Component_1','Component_2','Lustrum','Decade')
+colnames(lda_yr) <- lda_colnames
+colnames(lda_yr5) <- lda_colnames
+colnames(lda_yr10) <- lda_colnames
+
+lda_yr$Decade <- as.factor(lda_yr$Decade)
+
+ggplot(lda_yr, aes(x=Component_1, y=Component_2, colour=Decade)) +
+  geom_point() +
+  scale_color_brewer(palette = "Spectral") +
+  labs(
+    x = "1st LDA Feature",
+    y = "2nd LDA Feature",
+    title = "LDA Features (spreading Year)")
+
+lda_yr5$Decade <- as.factor(lda_yr$Decade)
+
+ggplot(lda_yr5, aes(x=Component_1, y=Component_2, colour=Decade)) +
+  geom_point() +
+  scale_color_brewer(palette = "Spectral") +
+  labs(
+    x = "1st LDA Feature",
+    y = "2nd LDA Feature",
+    title = "LDA Features (spreading Lustrum)")
+
+lda_yr10$Decade <- as.factor(lda_yr$Decade)
+
+ggplot(lda_yr10, aes(x=Component_1, y=Component_2, colour=Decade)) +
+  geom_point() +
+  scale_color_brewer(palette = "Spectral") +
+  labs(
+    x = "1st LDA Feature",
+    y = "2nd LDA Feature",
+    title = "LDA Features (spreading Decade)")
+
+###############################
+#Melody Error Plots
+std_values <- read.csv('Melody_std_values_w_year.csv', header=FALSE)
 colnames(std_values) <- c('std_value','year')
 std_values$quartile <- (
   (std_values$std_value > quantile(std_values$std_value, 0.2)) +
@@ -293,5 +333,10 @@ qplot(std_values$year,
       std_values$std_value, 
       colour=std_values$quartile, 
       geom="point") +
-  scale_color_brewer(palette='Spectral')
+  scale_color_brewer(palette='Spectral') +
+  labs(
+    x = 'Year',
+    y = 'Standard Deviation between Predictions',
+    title = 'Standard Deviation over Predictions by Year',
+    colour= 'Split Number')
   
