@@ -18,6 +18,7 @@ class Melody:
 		self.models = {
 			'Linear Regression' : linear_model.LinearRegression(),
 			'Ridge Regression' : linear_model.Ridge(),
+			'Elastic Net': linear_model.ElasticNet(),
 			#'Bayesian Ridge' : linear_model.BayesianRidge(),
 			#'OMP CV' : linear_model.OrthogonalMatchingPursuit(),
 			'Lasso' : linear_model.Lasso(),#alpha = 100),
