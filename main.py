@@ -54,3 +54,14 @@ def save_preds(preds, outname):
 		f.write('\n')
 
 	f.close()
+
+def import_preds(filename):
+
+	f = open(filename)
+
+	lines = f.readlines()
+	f.close()
+
+	lines = [line.split('\n')[0] for line in lines]
+	return np.array(lines, dtype=float)
+	
