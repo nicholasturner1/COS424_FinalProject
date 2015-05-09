@@ -1,5 +1,5 @@
 import numpy as np
-
+from math import sqrt
 from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 
 def import_file(filename, y_var = "yr"):
@@ -34,8 +34,12 @@ def score_preds(preds, y, accuracy=False):
 		print accuracy_score(y, preds)
 		print
 
-	print "MSE: "
-	print mean_squared_error(y, preds)
+	print "RMSE: "
+	print sqrt(mean_squared_error(y, preds))
+	print
+
+	print "Mean Absolute Error"
+	print np.mean(np.absolute(preds - np.array(y)))
 	print
 
 	print "r^2: "
