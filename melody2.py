@@ -17,11 +17,11 @@ class Melody:
 		#Initializing all regression models
 		self.models = {
 			'Linear Regression' : linear_model.LinearRegression(),
-			'Ridge Regression' : linear_model.Ridge(alpha = 1),
+			'Ridge Regression' : linear_model.Ridge(),
 			#'Bayesian Ridge' : linear_model.BayesianRidge(),
 			#'OMP CV' : linear_model.OrthogonalMatchingPursuit(),
-			'Lasso' : linear_model.Lasso(alpha = 100),
-			'LARS' : linear_model.Lars(n_nonzero_coefs=91)
+			'Lasso' : linear_model.Lasso(),#alpha = 100),
+			'LARS' : linear_model.Lars(),
 			}
 
 		self.second_models = [
