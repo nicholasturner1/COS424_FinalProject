@@ -340,3 +340,88 @@ qplot(std_values$year,
     title = 'Standard Deviation over Predictions by Year',
     colour= 'Split Number')
   
+#Melody Comparison
+cv <- read.csv('cv.csv')
+p_m2 <- read.csv('preds/Melody/Melody_2_year_cv_preds_full.csv', header=FALSE)
+p_m4 <- read.csv('preds/Melody/Melody_4_year_cv_preds_full.csv', header=FALSE)
+p_m6 <- read.csv('preds/Melody/Melody_6_year_cv_preds_full.csv', header=FALSE)
+p_m8 <- read.csv('preds/Melody/Melody_8_year_cv_preds_full.csv', header=FALSE)
+p_m10 <- read.csv('preds/Melody/Melody_10_year_cv_preds_full.csv', header=FALSE)
+p_m12 <- read.csv('preds/Melody/Melody_12_year_cv_preds_full.csv', header=FALSE)
+p_m14 <- read.csv('preds/Melody/Melody_14_year_cv_preds_full.csv', header=FALSE)
+p_m16 <- read.csv('preds/Melody/Melody_16_year_cv_preds_full.csv', header=FALSE)
+
+err2 <- as.vector((cv$year - p_m2$V1)^2)
+err4 <- as.vector((cv$year - p_m4$V1)^2)
+err6 <- as.vector((cv$year - p_m6$V1)^2)
+err8 <- as.vector((cv$year - p_m8$V1)^2)
+err10 <- as.vector((cv$year - p_m10$V1)^2)
+err12 <- as.vector((cv$year - p_m12$V1)^2)
+err14 <- as.vector((cv$year - p_m14$V1)^2)
+err16 <- as.vector((cv$year - p_m16$V1)^2)
+
+to_plot = data.frame(
+  'M2' = err2,
+  'M4' = err4,
+  'M6' = err6,
+  'M8' = err8,
+  'M10' = err10,
+  'M12' = err12,
+  'M14' = err14,
+  'M16' = err16,
+  'year' = cv$year
+)
+
+m_to_plot <- melt(to_plot, id.vars='year')
+colnames(m_to_plot) <- c('Year','Model','Squared_Error')
+
+ggplot(m_to_plot, aes(x=Year, y=Squared_Error, colour=Model, fill=Model)) +
+  geom_smooth() +
+  geom_point(alpha=0.05) +
+  labs(
+    y = "Squared Error",
+    title = "Squared Error by Year for Melody Models")
+
+to_plot_p = data.frame(
+  'M2' = p_m2$V1,
+  'M4' = p_m4$V1,
+  'M6' = p_m6$V1,
+  'M8' = p_m8$V1,
+  'M10' = p_m10$V1,
+  'M12' = p_m12$V1,
+  'M14' = p_m14$V1,
+  'M16' = p_m16$V1,
+  'year' = cv$year
+)
+
+m_to_plot_p <- melt(to_plot_p, id.vars='year')
+colnames(m_to_plot_p) <- c('Year','Model','Predicted')
+
+ggplot(m_to_plot_p, aes(x=Year, y=Predicted, colour=Model, fill=Model)) +
+  geom_smooth() +
+  geom_abline(intercept=0, slope=1, colour='grey50') +
+  labs(
+    x = 'Year',
+    y = 'Predicted Release Year',
+    title = 'Melody Model Predictions by Year')
+
+r2 <- c(92.1,91.8,91.6,91.5,91.4,91.3,91.3,91.2)
+splits <- c(2,4,6,8,10,12,14,16)
+qplot(splits, r2, geom='point')
+
+
+###############################
+#New feature plots
+
+d$new1 <- d[,14] / d[,2]
+d$new2 <- d[,13] / d[,2]
+
+qplot(d$year, d$new1, geom='point') + 
+  labs(x = 'Year',
+       y = 'Engineered Feature 1',
+       title = 'Engineered Feature 1 = (Feature #13) / (Feature #1)')
+
+qplot(d$year, d$new2, geom='point') + 
+  labs(x = 'Year',
+       y = 'Engineered Feature 2',
+       title = 'Engineered Feature 2 = (Feature #14) / (Feature #1)')
